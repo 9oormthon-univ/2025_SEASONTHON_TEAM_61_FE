@@ -78,7 +78,7 @@ export default function Header() {
        </div>
       </div>
       <Bookmark className="w-8 h-8 text-black mr-2"/>
-      <UserRound className="w-8 h-8 text-black" onClick={() => router.push('/login')}/>
+      <UserRound className="w-8 h-8 text-black" onClick={() => router.push('/signup')}/>
      </div>
     </div>
     {/* 화면 전체 너비의 구분선 */}
