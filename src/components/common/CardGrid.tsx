@@ -54,10 +54,9 @@ export default function CardGrid({ cards, className = "", selectedCards = DEFAUL
   // props로 받은 selectedCards가 변경되면 내부 상태도 업데이트
   // JSON.stringify를 사용하여 배열 내용 비교로 불필요한 업데이트 방지
   useEffect(() => {
-    const currentSelection = JSON.stringify(internalSelectedCards.sort());
-    const newSelection = JSON.stringify(selectedCards.sort());
-    
-    if (currentSelection !== newSelection) {
+
+    // 배열이 실제로 다른 경우에만 업데이트
+    if (JSON.stringify(selectedCards) !== JSON.stringify(internalSelectedCards)) {
       setInternalSelectedCards(selectedCards);
     }
   }, [selectedCards, internalSelectedCards]);
