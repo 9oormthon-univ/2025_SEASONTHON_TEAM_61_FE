@@ -82,18 +82,19 @@ export default function Scrap() {
   const handleCategoryFilter = (category: string) => {
     setSelectedCategory(category);
     let filtered = scrapedPolicies;
-    
+
     if (category !== '전체') {
-      filtered = filtered.filter(policy => policy.category === category);
+      filtered = filtered.filter((policy) => policy.category === category);
     }
-    
+
     if (searchTerm) {
-      filtered = filtered.filter(policy => 
-        policy.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        policy.description.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (policy) =>
+          policy.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          policy.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     setFilteredPolicies(filtered);
   };
 
@@ -101,18 +102,19 @@ export default function Scrap() {
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     let filtered = scrapedPolicies;
-    
+
     if (selectedCategory !== '전체') {
-      filtered = filtered.filter(policy => policy.category === selectedCategory);
+      filtered = filtered.filter((policy) => policy.category === selectedCategory);
     }
-    
+
     if (term) {
-      filtered = filtered.filter(policy => 
-        policy.title.toLowerCase().includes(term.toLowerCase()) ||
-        policy.description.toLowerCase().includes(term.toLowerCase())
+      filtered = filtered.filter(
+        (policy) =>
+          policy.title.toLowerCase().includes(term.toLowerCase()) ||
+          policy.description.toLowerCase().includes(term.toLowerCase())
       );
     }
-    
+
     setFilteredPolicies(filtered);
   };
 
@@ -142,7 +144,7 @@ export default function Scrap() {
             {categories.map((category) => (
               <Button
                 key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
+                variant={selectedCategory === category ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => handleCategoryFilter(category)}
                 className="text-xs"
@@ -174,10 +176,6 @@ export default function Scrap() {
           {filteredPolicies.map((policy) => (
             <div key={policy.id} className="relative">
               <PolicyCard policy={policy} />
-              {/* 스크랩 해제 버튼 */}
-              <button className="absolute top-4 right-4 p-2 bg-white/90 rounded-full shadow-md hover:bg-white transition-colors z-10">
-                <Heart className="w-4 h-4 text-red-500 fill-red-500 hover:scale-110 transition-transform" />
-              </button>
             </div>
           ))}
         </div>
@@ -189,8 +187,8 @@ export default function Scrap() {
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">검색 결과가 없습니다</h3>
           <p className="text-gray-500 mb-4">다른 검색어나 필터를 시도해보세요</p>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => {
               setSearchTerm('');
               setSelectedCategory('전체');
@@ -212,11 +210,10 @@ export default function Scrap() {
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
-                {scrapedPolicies.filter(p => p.isRecruiting).length}
+                {scrapedPolicies.filter((p) => p.isRecruiting).length}
               </div>
               <div className="text-sm text-gray-600">모집중</div>
             </div>
-          
           </div>
         </div>
       )}

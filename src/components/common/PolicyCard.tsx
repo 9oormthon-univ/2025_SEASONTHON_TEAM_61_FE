@@ -10,10 +10,9 @@ interface PolicyCardProps {
 }
 
 export default function PolicyCard({ policy, className = '' }: PolicyCardProps) {
-  console.log(policy.metadata.applicationUrl);
   return (
     <Card
-      className={`group h-[260px] relative overflow-hidden bg-white rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-2 border border-gray-200 hover:border-primary ${className}`}
+      className={`group h-[290px] relative overflow-hidden bg-white rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-2 border border-gray-200 hover:border-primary ${className}`}
     >
       {/* 콘텐츠 영역 */}
       <div className="px-5 py-4 h-full flex flex-col">
