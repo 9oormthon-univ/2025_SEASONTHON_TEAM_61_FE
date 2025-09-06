@@ -1,6 +1,6 @@
 'use client'
 
-import { Map, MessageCircleMore, CalendarDays } from "lucide-react";
+import { Map, MessageCircleMore, CalendarDays, Bookmark } from "lucide-react";
 
 export default function FloatingButtons() {
   return (
@@ -35,10 +35,10 @@ export default function FloatingButtons() {
         className="flex flex-col w-20 h-20 bg-white hover:bg-gray-200 text-[#1082ff] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group font-medium text-[14px]"
         onClick={() => console.log('캘린더 클릭')}
       >
-       <CalendarDays className="w-8 h-8 text-[#1082ff]" />
-       캘린더
+       <Bookmark className="w-8 h-8 text-[#1082ff]" />
+       스크랩
         <span className="absolute right-16 bg-gray-800 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-          캘린더더
+          스크랩
         </span>
       </button>
     </div>

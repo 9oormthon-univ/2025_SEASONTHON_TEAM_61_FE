@@ -4,11 +4,11 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const borderVariants = cva(
-  "border-[0.5px] border-solid border-[#A1A1A1]",
+  "border-[0.5px] border-solid border-[#d2d2d2]",
   {
     variants: {
       variant: {
-        default: "border-[#A1A1A1]",
+        default: "border-[#d2d2d2]",
         light: "border-[#D1D1D1]",
         dark: "border-[#717171]",
         primary: "border-primary",
