@@ -26,24 +26,28 @@ export const useLoginState = create<LoginState>((set, get) => ({
     });
   },
 
-  logout: () => {
-    // 쿠키 기반 인증에서는 백엔드 로그아웃 API 호출
-    fetch('http://localhost:8080/kakao/auth/logout', {
-      method: 'POST',
-      credentials: 'include', // 쿠키 전송
-    }).finally(() => {
+  logout: async () => {
+    try {
+      // 프록시를 통한 카카오 로그아웃 API 호출
+      await fetch('/kakao/auth/logout', {
+        method: 'POST',
+        credentials: 'include', // 쿠키 전송
+      });
+    } catch (error) {
+      console.error('로그아웃 API 호출 실패:', error);
+    } finally {
       set({
         isLoggedIn: false,
         userInfo: null,
       });
       // 로그인 페이지로 리다이렉트
       window.location.href = '/login';
-    });
+    }
   },
 
   checkAuthStatus: async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/me', {
+      const response = await fetch('/api/me', {
         method: 'GET',
         credentials: 'include', // 쿠키 전송
       });

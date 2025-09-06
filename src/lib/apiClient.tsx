@@ -1,10 +1,23 @@
 import axios, { AxiosInstance } from 'axios';
 
+// 프록시를 통한 API 호출을 위한 설정
+const getBaseURL = () => {
+  // 개발 환경에서는 프록시를 통해 호출
+  if (process.env.NODE_ENV === 'development') {
+    return ''; // 프록시를 사용하므로 baseURL을 비워둠
+  }
+  
+  // 프로덕션에서는 직접 API 서버 호출
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://cheer-up.net';
+};
+
 console.log('환경변수:', process.env.NEXT_PUBLIC_BASE_URL);
+console.log('API Base URL:', getBaseURL());
 
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  baseURL: getBaseURL(),
   withCredentials: true,
+  timeout: 10000, // 10초 타임아웃
   headers: {
     'Content-Type': 'application/json',
   },

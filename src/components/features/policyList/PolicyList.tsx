@@ -5,6 +5,14 @@ import { Button } from "../../ui/button";
 import PolicyCardList from "./PolicyCardList";
 import { GetPolicyList } from "./api/PolicyLisyApi";
 
+interface Policy {
+    policyNo: string;
+    policyName: string;
+    policySummary: string;
+    category: string;
+    dday: string;
+}
+
 interface PolicyListProps {
     category?: string;
 }
@@ -13,30 +21,49 @@ export default function PolicyList({ category }: PolicyListProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedCategory, setSelectedCategory] = useState(category);
+    const [policyList, setPolicyList] = useState<Policy[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalElements, setTotalElements] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     
     // category prop이 변경될 때마다 selectedCategory 상태 업데이트
     useEffect(() => {
         setSelectedCategory(category);
-        policyList();
     }, [category]);
 
-    const policyList = async () => {
-        const response = await GetPolicyList();
-        console.log(response);
+    // 컴포넌트 마운트 시 정책 목록 불러오기
+    useEffect(() => {
+        fetchPolicyList();
+    }, [currentPage, selectedCategory]);
+
+    const fetchPolicyList = async () => {
+        try {
+            setLoading(true);
+            const response = await GetPolicyList({page: currentPage, size: 12, category: selectedCategory || '전체'}  );
+            console.log(response);
+            setPolicyList(response.content || []);
+            setTotalPages(response.totalPages);
+            setTotalElements(response.totalElements);
+        } catch (error) {
+            console.error('정책 목록을 불러오는데 실패했습니다:', error);
+            setPolicyList([]);
+        } finally {
+            setLoading(false);
+        }
     }
 
     // 카테고리 변경 시 URL 파라미터 업데이트하는 함수
     const handleCategoryChange = (newCategory: string) => {
         setSelectedCategory(newCategory);
+        setCurrentPage(1); // 카테고리 변경 시 첫 페이지로 이동
         
         // 현재 URL의 search params를 가져와서 업데이트
         const current = new URLSearchParams(Array.from(searchParams.entries()));
         
-        if (newCategory && newCategory !== '전체') {
+        if (newCategory) {
             current.set('category', newCategory);
-        } else {
-            current.delete('category');
-        }
+        } 
         
         // URL 업데이트 (페이지 새로고침 없이)
         const search = current.toString();
@@ -70,7 +97,15 @@ export default function PolicyList({ category }: PolicyListProps) {
                 </div>
                
                 <div className="mt-10 w-full">
-                    <PolicyCardList selectedCategory={selectedCategory}/>
+                    <PolicyCardList 
+                        selectedCategory={selectedCategory}
+                        policyList={policyList}
+                        loading={loading}
+                        totalPages={totalPages}
+                        totalElements={totalElements}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                    />
                 </div>
             </div>
         </div>
