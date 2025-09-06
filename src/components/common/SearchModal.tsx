@@ -108,7 +108,7 @@ export default function SearchModal({ isOpen, onClose, keywords }: SearchModalPr
 
   // 검색 결과 클릭
   const handleResultClick = (policy: SearchPolicyCard) => {
-    router.push(`/youthyPolicy?id=${policy.id}`);
+    router.push(`/youthyPolicy?id=${policy.policyNo}`);
     onClose();
   };
 
@@ -192,7 +192,7 @@ export default function SearchModal({ isOpen, onClose, keywords }: SearchModalPr
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {searchResults.map((policy) => (
                     <div
-                      key={policy.id}
+                      key={policy.policyNo}
                       onClick={() => handleResultClick(policy)}
                       className="p-4 border border-gray-200 rounded-lg hover:border-primary hover:bg-blue-50 cursor-pointer transition-all duration-200"
                     >
