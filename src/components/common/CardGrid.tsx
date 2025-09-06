@@ -1,9 +1,7 @@
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
 
 interface CardData {
   id: number;
@@ -19,7 +17,6 @@ interface CardGridProps {
   onCardClick?: (title: string) => void; // 카드 클릭 핸들러 추가
 }
 
-
 // 기본 빈 배열을 상수로 정의하여 참조 안정성 확보
 const DEFAULT_SELECTED_CARDS: string[] = [];
 
@@ -31,8 +28,6 @@ export default function CardGrid({
   onCardClick,
 }: CardGridProps) {
   const [internalSelectedCards, setInternalSelectedCards] = useState<string[]>(selectedCards);
-  const router = useRouter();
-
 
   // 기본 카드 데이터 (8개)
   const defaultCards: CardData[] = [
@@ -78,7 +73,6 @@ export default function CardGrid({
     }
   }, [selectedCards, internalSelectedCards]);
 
-
   return (
     <div className={`flex flex-col gap-4 w-full items-center ${className}`}>
       {/* 첫 번째 줄 - 4개 카드 */}
@@ -88,7 +82,7 @@ export default function CardGrid({
           return (
             <Card
               key={card.id}
-              className={`w-[150px] h-[160px] rounded-[10px] shadow-lg hover:shadow-xl transition-all cursor-pointer ${
+              className={`w-[150px] h-[160px] rounded-[10px] shadow-lg hover:scale-103 hover:border hover:border-primary hover:shadow-primary/30 transition-all cursor-pointer ${
                 isSelected
                   ? 'bg-[#1082FF] text-white border-2 border-[#1082FF]'
                   : 'bg-white text-black border-2 border-transparent'
@@ -97,7 +91,7 @@ export default function CardGrid({
             >
               <CardHeader className="pb-2">
                 <CardTitle
-                  className={`text-[20px] font-semibold truncate ${
+                  className={`text-[20px] font-semibold truncate hover:text-primary ${
                     isSelected ? 'text-white' : 'text-black'
                   }`}
                 >
@@ -123,7 +117,7 @@ export default function CardGrid({
           return (
             <Card
               key={card.id}
-              className={`w-[150px] h-[160px] rounded-[10px] shadow-lg hover:shadow-xl transition-all cursor-pointer ${
+              className={`w-[150px] h-[160px] rounded-[10px] shadow-lg hover:scale-103 hover:border hover:border-primary hover:shadow-primary/30 transition-all cursor-pointer ${
                 isSelected
                   ? 'bg-[#1082FF] text-white border-2 border-[#1082FF]'
                   : 'bg-white text-black border-2 border-transparent'
@@ -132,7 +126,7 @@ export default function CardGrid({
             >
               <CardHeader className="pb-2">
                 <CardTitle
-                  className={`text-[20px] font-semibold truncate ${
+                  className={`text-[20px] font-semibold truncate hover:text-primary ${
                     isSelected ? 'text-white' : 'text-black'
                   }`}
                 >

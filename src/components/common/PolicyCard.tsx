@@ -10,9 +10,10 @@ interface PolicyCardProps {
 }
 
 export default function PolicyCard({ policy, className = '' }: PolicyCardProps) {
+  console.log(policy.metadata.applicationUrl);
   return (
     <Card
-      className={`group relative overflow-hidden bg-white rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-2 border border-gray-200 hover:border-primary ${className}`}
+      className={`group relative overflow-hidden bg-white rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-200 hover:border-primary ${className}`}
     >
       {/* 콘텐츠 영역 */}
       <div className="px-5 py-0">
@@ -74,7 +75,7 @@ export default function PolicyCard({ policy, className = '' }: PolicyCardProps) 
               overflow: 'hidden',
             }}
           >
-            신청대상 : {policy.description}
+            신청내용 : {policy.description}
           </p>
           <p
             className="text-sm text-gray-600 leading-relaxed"
@@ -92,15 +93,20 @@ export default function PolicyCard({ policy, className = '' }: PolicyCardProps) 
         {/* 하단 액션 버튼 */}
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
           <div className="flex items-center gap-3">
-            <button className="text-xs text-gray-500 hover:text-primary transition-colors">
+            <button className="text-xs text-gray-500 hover:text-primary transition-colors cursor-pointer">
               신청 가이드
             </button>
-            <button className="text-xs text-gray-500 hover:text-primary transition-colors">
+            <button className="text-xs text-gray-500 hover:text-primary transition-colors cursor-pointer">
               스크랩
             </button>
           </div>
-
-          <button className="flex items-center gap-1 text-primary hover:text-primary/75 transition-colors group/btn">
+          <button
+            onClick={() => {
+              console.log('Button clicked!');
+              window.open(policy.metadata.applicationUrl, '_blank');
+            }}
+            className="flex items-center gap-1 text-primary hover:text-primary/75 transition-colors group/btn cursor-pointer"
+          >
             <span className="text-sm font-medium">자세히 보기</span>
             <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
           </button>
@@ -108,7 +114,7 @@ export default function PolicyCard({ policy, className = '' }: PolicyCardProps) 
       </div>
 
       {/* 호버 시 나타나는 그라데이션 오버레이 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-sky-500/0 to-indigo-500/0 group-hover:from-blue-500/5 group-hover:via-sky-500/5 group-hover:to-indigo-500/5 transition-all duration-300 rounded-sm"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-sky-500/0 to-indigo-500/0 group-hover:from-blue-500/5 group-hover:via-sky-500/5 group-hover:to-indigo-500/5 transition-all duration-300 rounded-sm pointer-events-none"></div>
     </Card>
   );
 }

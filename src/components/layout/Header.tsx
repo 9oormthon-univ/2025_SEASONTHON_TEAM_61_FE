@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useModal } from '@/contexts/ModalContext';
 import { useLoginState } from '@/stores/login/useLoginState';
+import SearchModal from '../common/SearchModal';
+// import { getPopular } from './api/popular';
 
 export default function Header() {
   const router = useRouter();
@@ -13,6 +15,7 @@ export default function Header() {
   const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { selectedAddress, openAddressModal } = useModal();
 
   const { isLoggedIn } = useLoginState();
@@ -48,7 +51,7 @@ export default function Header() {
   }, [keywords.length]);
 
   return (
-    <div className="w-full bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100 backdrop:blur supports-[backdrop-filter]:bg-background/60 ">
+    <div className="w-full bg-white/95 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100 backdrop:blur supports-[backdrop-filter]:bg-background/60 ">
       <div className="flex flex-row items-center w-full gap-6 justify-between px-6 py-4 max-w-7xl mx-auto">
         <div className="flex flex-row items-center gap-4">
           <Image
@@ -129,7 +132,18 @@ export default function Header() {
           )}
 
           {/* 검색 */}
-          <Search className="w-5 h-5 text-primary hover:font-bold transition-colors cursor-pointer" />
+          <Search
+            className="w-5 h-5 text-primary hover:font-bold transition-colors cursor-pointer"
+            onClick={() => setIsSearchModalOpen(!isSearchModalOpen)}
+          />
+          {/* 검색 모달 */}
+          {isSearchModalOpen && (
+            <SearchModal
+              isOpen={isSearchModalOpen}
+              onClose={() => setIsSearchModalOpen(false)}
+              keywords={keywords}
+            />
+          )}
 
           {/* 유저 */}
           <div className="flex flex-row items-center gap-3">

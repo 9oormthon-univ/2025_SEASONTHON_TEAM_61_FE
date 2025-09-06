@@ -8,6 +8,11 @@ interface ModalContextType {
   closeAddressModal: () => void;
   selectedAddress: string;
   setSelectedAddress: (address: string) => void;
+  isSearchModalOpen: boolean;
+  openSearchModal: () => void;
+  closeSearchModal: () => void;
+  keywords: string[];
+  setKeywords: (keywords: string[]) => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -18,6 +23,10 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 
   const openAddressModal = () => setIsAddressModalOpen(true);
   const closeAddressModal = () => setIsAddressModalOpen(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [keywords, setKeywords] = useState<string[]>([]);
+  const openSearchModal = () => setIsSearchModalOpen(true);
+  const closeSearchModal = () => setIsSearchModalOpen(false);
 
   return (
     <ModalContext.Provider
@@ -27,6 +36,11 @@ export function ModalProvider({ children }: { children: ReactNode }) {
         closeAddressModal,
         selectedAddress,
         setSelectedAddress,
+        isSearchModalOpen,
+        openSearchModal,
+        closeSearchModal,
+        keywords,
+        setKeywords,
       }}
     >
       {children}

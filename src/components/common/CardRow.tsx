@@ -66,7 +66,7 @@ export default function CardRow({
         {displayCards.map((card, index) => (
           <Card
             key={card.id}
-            className={`group relative overflow-hidden bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-2 border border-gray-100 ${cardWidth} ${cardHeight}`}
+            className={`group relative overflow-hidden bg-white rounded-sm shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-gray-100 ${cardWidth} ${cardHeight}`}
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             {/* 그라데이션 배경 */}
