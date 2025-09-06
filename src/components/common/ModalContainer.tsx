@@ -2,20 +2,22 @@
 
 import { useModal } from '@/contexts/ModalContext';
 import AddressModal from './AddressModal';
+import SearchModal from './SearchModal';
 import { AlertModal, ConfirmModal } from '../ui/modal';
 
 export default function ModalContainer() {
-  const { 
-    isAddressModalOpen, 
-    closeAddressModal, 
+  const {
+    isAddressModalOpen,
+    closeAddressModal,
     setSelectedAddress,
     isAlertModalOpen,
     closeAlertModal,
     alertModalData,
     isConfirmModalOpen,
     closeConfirmModal,
-    confirmModalData
+    confirmModalData,
   } = useModal();
+  const { isSearchModalOpen, closeSearchModal, keywords } = useModal();
 
   const handleApply = (address: string) => {
     setSelectedAddress(address);
@@ -25,14 +27,15 @@ export default function ModalContainer() {
   return (
     <>
       <AddressModal isOpen={isAddressModalOpen} onClose={closeAddressModal} onApply={handleApply} />
-      
+      <SearchModal isOpen={isSearchModalOpen} onClose={closeSearchModal} keywords={keywords} />
+
       <AlertModal
         isOpen={isAlertModalOpen}
         onClose={closeAlertModal}
         title={alertModalData.title}
         message={alertModalData.message}
       />
-      
+
       <ConfirmModal
         isOpen={isConfirmModalOpen}
         onClose={closeConfirmModal}

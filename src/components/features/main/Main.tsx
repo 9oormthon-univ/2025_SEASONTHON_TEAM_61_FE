@@ -118,6 +118,7 @@ export default function Main() {
         setError(null);
         const data = await getDistrictPolicies();
         setDistrictPolicies(data);
+        console.log(data);
       } catch {
         setError('정책 데이터를 불러오는데 실패했습니다.');
         setDistrictPolicies({});
@@ -339,6 +340,7 @@ export default function Main() {
   };
 
   const filteredPolicies = getFilteredPolicies();
+  console.log(filteredPolicies);
 
   const router = useRouter();
 
@@ -782,16 +784,16 @@ export default function Main() {
 
                 {/* 정책 카드 그리드 */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {filteredPolicies.map((policy) => (
+                  {(districtPolicies[selectedDistrict] || []).map((policy) => (
                     <PolicyCard key={policy.id} policy={policy} />
                   ))}
                 </div>
 
-                {filteredPolicies.length === 0 && (
+                {/* {filteredPolicies.length === 0 && (
                   <div className="text-center py-12">
                     <p className="text-gray-500 text-lg">해당 조건에 맞는 정책이 없습니다.</p>
                   </div>
-                )}
+                )} */}
               </>
             )}
           </div>

@@ -23,7 +23,7 @@ export default function Modal({
   size = 'md',
   showCloseButton = true,
   closeOnOverlayClick = true,
-  footer
+  footer,
 }: ModalProps) {
   // ESC 키로 모달 닫기
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function Modal({
     sm: 'max-w-sm',
     md: 'max-w-md',
     lg: 'max-w-lg',
-    xl: 'max-w-xl'
+    xl: 'max-w-xl',
   };
 
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -62,7 +62,7 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-50 p-4"
       onClick={handleOverlayClick}
     >
       <div
@@ -72,16 +72,9 @@ export default function Modal({
         {/* Header */}
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between p-6 border-b">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {title}
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
             {showCloseButton && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onClose}
-                className="p-1 h-8 w-8"
-              >
+              <Button variant="ghost" size="sm" onClick={onClose} className="p-1 h-8 w-8">
                 <X className="h-4 w-4" />
               </Button>
             )}
@@ -89,16 +82,10 @@ export default function Modal({
         )}
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto p-6">{children}</div>
 
         {/* Footer */}
-        {footer && (
-          <div className="border-t p-6">
-            {footer}
-          </div>
-        )}
+        {footer && <div className="border-t p-6">{footer}</div>}
       </div>
     </div>
   );
@@ -124,7 +111,7 @@ export function ConfirmModal({
   message,
   confirmText = '확인',
   cancelText = '취소',
-  confirmVariant = 'default'
+  confirmVariant = 'default',
 }: ConfirmModalProps) {
   const handleConfirm = () => {
     onConfirm();
@@ -167,7 +154,7 @@ export function AlertModal({
   onClose,
   title,
   message,
-  buttonText = '확인'
+  buttonText = '확인',
 }: AlertModalProps) {
   return (
     <Modal
@@ -177,9 +164,7 @@ export function AlertModal({
       size="sm"
       footer={
         <div className="flex justify-end">
-          <Button onClick={onClose}>
-            {buttonText}
-          </Button>
+          <Button onClick={onClose}>{buttonText}</Button>
         </div>
       }
     >

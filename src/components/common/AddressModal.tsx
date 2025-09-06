@@ -11,7 +11,7 @@ interface AddressModalProps {
 
 export default function AddressModal({ isOpen, onClose, onApply }: AddressModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedAddress, setSelectedAddress] = useState('서울시 강남구');
+  const [selectedAddress] = useState('서울시 강남구');
 
   if (!isOpen) return null;
 

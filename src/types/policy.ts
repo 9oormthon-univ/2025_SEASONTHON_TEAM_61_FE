@@ -9,8 +9,18 @@ export interface PolicyCard {
   isHot?: boolean;
   isRecruiting?: boolean;
   image?: string;
+  metadata: {
+    applicationUrl: string;
+  };
 }
 
+export interface SearchPolicyCard {
+  id: number;
+  policyName: string;
+  policySummary: string;
+  category: string;
+  dday: string;
+}
 export interface DetailPolicyProps {
   policyNo: string;
   policyName: string;

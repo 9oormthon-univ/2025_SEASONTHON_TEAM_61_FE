@@ -6,6 +6,8 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useModal } from '@/contexts/ModalContext';
 import { useLoginState } from '@/stores/login/useLoginState';
+import SearchModal from '../common/SearchModal';
+// import { getPopular } from './api/popular';
 
 export default function Header() {
   const router = useRouter();
@@ -13,8 +15,9 @@ export default function Header() {
   const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const { selectedAddress, openAddressModal } = useModal();
-  
+
   // 토글 외부 클릭 감지를 위한 ref
   const toggleRef = useRef<HTMLDivElement>(null);
   const searchDropdownRef = useRef<HTMLDivElement>(null);
@@ -58,7 +61,7 @@ export default function Header() {
       if (toggleRef.current && !toggleRef.current.contains(event.target as Node)) {
         setIsToggleOpen(false);
       }
-      
+
       // 검색 드롭다운 외부 클릭 감지
       if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target as Node)) {
         setIsSearchDropdownOpen(false);
@@ -67,7 +70,7 @@ export default function Header() {
 
     // 이벤트 리스너 추가
     document.addEventListener('mousedown', handleClickOutside);
-    
+
     // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -75,7 +78,7 @@ export default function Header() {
   }, []);
 
   return (
-    <div className="w-full bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100 backdrop:blur supports-[backdrop-filter]:bg-background/60 ">
+    <div className="w-full bg-white/95 backdrop-blur-sm sticky top-0 z-40 border-b border-gray-100 backdrop:blur supports-[backdrop-filter]:bg-background/60 ">
       <div className="flex flex-row items-center w-full gap-6 justify-between px-6 py-4 max-w-7xl mx-auto">
         <div className="flex flex-row items-center gap-4">
           <Image
@@ -105,7 +108,7 @@ export default function Header() {
           </div>
 
           {/* 실시간 인기 검색어 */}
-          <div 
+          <div
             ref={searchDropdownRef}
             className="w-100 flex flex-row items-center gap-2 px-4 h-10 transition-all duration-300 cursor-pointer relative"
           >
@@ -133,7 +136,7 @@ export default function Header() {
 
           {/* 실시간 인기 검색어 드롭다운 */}
           {isSearchDropdownOpen && (
-            <div className="absolute top-12 right-0 mt-2 w-[300px] bg-white border border-gray-200 rounded-sm shadow-lg z-20 overflow-hidden">
+            <div className="absolute top-14 right-122 mt-2 w-[300px] bg-white border border-gray-200 rounded-sm shadow-lg z-20 overflow-hidden">
               <div className="p-4 border-b border-gray-100">
                 <h3 className="text-sm font-semibold text-gray-800 mb-1">실시간 인기 검색어</h3>
                 <p className="text-xs text-gray-500">최근 1시간 단위로 갱신하고 있어요</p>
@@ -159,7 +162,18 @@ export default function Header() {
           )}
 
           {/* 검색 */}
-          <Search className="w-5 h-5 text-primary hover:font-bold transition-colors cursor-pointer" />
+          <Search
+            className="w-5 h-5 text-primary hover:font-bold transition-colors cursor-pointer"
+            onClick={() => setIsSearchModalOpen(!isSearchModalOpen)}
+          />
+          {/* 검색 모달 */}
+          {isSearchModalOpen && (
+            <SearchModal
+              isOpen={isSearchModalOpen}
+              onClose={() => setIsSearchModalOpen(false)}
+              keywords={keywords}
+            />
+          )}
 
           {/* 유저 */}
           <div className="flex flex-row items-center gap-3">
