@@ -50,7 +50,7 @@ export default function CardRow({
       id: 4,
       title: '청년 문화 지원',
       content: '문화 활동 참여 기회 및 문화비 지원',
-      img: '/img/card/card10.png',
+      img: '/img/card/card1.png',
     },
   ];
 

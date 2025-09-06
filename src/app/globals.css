@@ -54,7 +54,7 @@
   /* --primary: oklch(58.5% 0.233 277.117); */
   --primary: #1082ff;
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: #f2f8ff;
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -124,10 +124,9 @@
 
 @layer components {
   .district {
-    @apply fill-gray-200 stroke-gray-800 stroke-[0.5] transition-transform duration-200 ease-in-out cursor-pointer;
-    transform-origin: center;
+    @apply fill-gray-200 stroke-gray-800 stroke-[0.5] transition-all duration-200 ease-in-out cursor-pointer;
   }
   .district:hover {
-    @apply fill-indigo-500 scale-105;
+    @apply fill-primary scale-105;
   }
 }
