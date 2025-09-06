@@ -6,12 +6,27 @@ const getBaseURL = () => {
   if (process.env.NODE_ENV === 'development') {
     return ''; // 프록시를 사용하므로 baseURL을 비워둠
   }
-  
+
   // 프로덕션에서는 직접 API 서버 호출
   return process.env.NEXT_PUBLIC_API_BASE_URL || 'http://cheer-up.net';
 };
 
-console.log('환경변수:', process.env.NEXT_PUBLIC_BASE_URL);
+// 프록시를 통한 API 호출을 위한 설정
+const getBaseURL = () => {
+  // 개발 환경에서는 프록시를 통해 호출
+  if (process.env.NODE_ENV === 'development') {
+    return ''; // 프록시를 사용하므로 baseURL을 비워둠
+  }
+
+  // 프로덕션에서는 직접 API 서버 호출
+  return process.env.NEXT_PUBLIC_API_BASE_URL || 'https://cheer-up.net';
+};
+
+console.log('환경변수:', {
+  NODE_ENV: process.env.NODE_ENV,
+  NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+});
 console.log('API Base URL:', getBaseURL());
 
 export const apiClient: AxiosInstance = axios.create({
@@ -55,7 +70,7 @@ apiClient.interceptors.response.use(
           error.config.headers.Authorization = `Bearer ${newAccessToken}`;
           return apiClient.request(error.config);
         } catch (refreshError) {
-          console.error('리프레시 토큰 갱신 오류:', refreshError);
+          console.error('리프레시 토큰 갱신 실패:', refreshError);
           // 리프레시 토큰도 만료된 경우 로그아웃
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');

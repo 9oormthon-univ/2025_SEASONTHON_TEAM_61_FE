@@ -8,7 +8,12 @@ import CardRow from '../../common/CardRow';
 import SeoulMap from './SeoulMap';
 import PolicyCard from '../../common/PolicyCard';
 import { DistrictName, PolicyCard as PolicyCardType } from '@/types/policy';
-import { districtPolicies } from '@/data/districtPolicies';
+// import { districtPolicies } from '@/data/districtPolicies';
+import { getDistrictPolicies } from '@/components/common/api/seoulMap';
+
+interface DistrictPolicies {
+  [key: string]: PolicyCardType[];
+}
 
 export default function Main() {
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictName | null>(null);
@@ -18,6 +23,8 @@ export default function Main() {
   // 지도 스크롤을 위한 ref
   const mapSectionRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
+
+  const districtPolicies = getDistrictPolicies() as unknown as DistrictPolicies;
 
   // 필터 상태 관리
   const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false);
@@ -207,6 +214,33 @@ export default function Main() {
     }
   };
 
+  // 개별 필터 제거 핸들러
+  const handleRemoveFilter = (type: string, value: string) => {
+    switch (type) {
+      case 'category':
+        setSelectedCategory('전체');
+        break;
+      case 'search':
+        setSearchTerm('');
+        break;
+      case 'region':
+        setSelectedRegions((prev) => prev.filter((item) => item !== value));
+        break;
+      case 'detailRegion':
+        setSelectedDetailRegions((prev) => prev.filter((item) => item !== value));
+        break;
+      case 'target':
+        setSelectedTargets((prev) => prev.filter((item) => item !== value));
+        break;
+      case 'institution':
+        setSelectedInstitutions((prev) => prev.filter((item) => item !== value));
+        break;
+      case 'recruitment':
+        setSelectedRecruitmentStatus((prev) => prev.filter((item) => item !== value));
+        break;
+    }
+  };
+
   // 초기화 핸들러
   const handleReset = () => {
     setSelectedDistrict(null);
@@ -356,7 +390,7 @@ export default function Main() {
         {selectedDistrict && (
           <div className="w-180 mx-auto">
             {/* 검색 및 필터 섹션 */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+            <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-6 mb-8">
               {/* 카테고리 필터 */}
               <div className="flex flex-wrap gap-2 mb-6">
                 {categories.map((category) => (
@@ -592,14 +626,14 @@ export default function Main() {
                   </div>
                   <div className="flex flex-row gap-2">
                     <span
-                      className={`${selectedSort === 'latest' ? 'text-primary font-semibold' : 'text-gray-700 hover:bg-gray-200'} cursor-pointer flex items-center gap-0.5 transition-all`}
+                      className={`${selectedSort === 'latest' ? 'text-primary font-semibold' : 'text-gray-700'} cursor-pointer flex items-center gap-0.5 transition-all`}
                       onClick={() => setSelectedSort('latest')}
                     >
                       {selectedSort === 'latest' && <Check className="size-4" />}
                       최신순
                     </span>
                     <span
-                      className={`${selectedSort === 'deadline' ? 'text-primary font-semibold' : 'text-gray-700 hover:bg-gray-200'} cursor-pointer flex items-center gap-0.5 transition-all`}
+                      className={`${selectedSort === 'deadline' ? 'text-primary font-semibold' : 'text-gray-700'} cursor-pointer flex items-center gap-0.5 transition-all`}
                       onClick={() => setSelectedSort('deadline')}
                     >
                       {selectedSort === 'deadline' && <Check className="size-4" />}
@@ -612,60 +646,102 @@ export default function Main() {
               {/* 활성 필터 표시 */}
               <div className="flex flex-wrap gap-2 mt-4">
                 {selectedCategory !== '전체' && (
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                    {selectedCategory} ×
+                  <span className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1">
+                    {selectedCategory}
+                    <button
+                      onClick={() => handleRemoveFilter('category', selectedCategory)}
+                      className="ml-1 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </span>
                 )}
                 {searchTerm && (
-                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                    {searchTerm} ×
+                  <span className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1">
+                    {searchTerm}
+                    <button
+                      onClick={() => handleRemoveFilter('search', searchTerm)}
+                      className="ml-1 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </span>
                 )}
                 {selectedRegions.map((region) => (
                   <span
                     key={region}
-                    className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
+                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
                   >
-                    {region} ×
+                    {region}
+                    <button
+                      onClick={() => handleRemoveFilter('region', region)}
+                      className="ml-1 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </span>
                 ))}
                 {selectedDetailRegions.map((detailRegion) => (
                   <span
                     key={detailRegion}
-                    className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm"
+                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
                   >
-                    {detailRegion} ×
+                    {detailRegion}
+                    <button
+                      onClick={() => handleRemoveFilter('detailRegion', detailRegion)}
+                      className="ml-1 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </span>
                 ))}
                 {selectedTargets.map((target) => (
                   <span
                     key={target}
-                    className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm"
+                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
                   >
-                    {target} ×
+                    {target}
+                    <button
+                      onClick={() => handleRemoveFilter('target', target)}
+                      className="ml-1 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </span>
                 ))}
                 {selectedInstitutions.map((institution) => (
                   <span
                     key={institution}
-                    className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm"
+                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
                   >
-                    {institution} ×
+                    {institution}
+                    <button
+                      onClick={() => handleRemoveFilter('institution', institution)}
+                      className="ml-1 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </span>
                 ))}
                 {selectedRecruitmentStatus.map((status) => (
                   <span
                     key={status}
-                    className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm"
+                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
                   >
-                    {status} ×
+                    {status}
+                    <button
+                      onClick={() => handleRemoveFilter('recruitment', status)}
+                      className="ml-1 hover:text-red-500 transition-colors"
+                    >
+                      ×
+                    </button>
                   </span>
                 ))}
               </div>
             </div>
 
             {/* 정책 카드 그리드 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredPolicies.map((policy) => (
                 <PolicyCard key={policy.id} policy={policy} />
               ))}
