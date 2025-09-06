@@ -40,11 +40,8 @@ export default function KakaoRedirection() {
             // 토큰 로컬 스토리지에 저장
             setTokens(access, null);
             setIsLoggedIn(true);
-
-            alert('로그인에 성공했습니다!');
-
-            // 홈페이지로 리다이렉트
-            router.push('/');
+            // 회원가입 페이지로 리다이렉트
+            router.push('/signup');
           } else {
             console.error('로그인 응답에 필요한 데이터가 없습니다:', res.data);
             alert('로그인에 실패했습니다. 다시 시도해주세요.');

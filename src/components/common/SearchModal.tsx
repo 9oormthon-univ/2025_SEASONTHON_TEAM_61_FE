@@ -4,7 +4,7 @@ import { Search, X, Clock, TrendingUp } from 'lucide-react';
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSearch } from '../layout/api/search';
-import { PolicyCard } from '@/types/policy';
+import { SearchPolicyCard } from '@/types/policy';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -15,7 +15,7 @@ interface SearchModalProps {
 export default function SearchModal({ isOpen, onClose, keywords }: SearchModalProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<PolicyCard[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchPolicyCard[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -107,7 +107,7 @@ export default function SearchModal({ isOpen, onClose, keywords }: SearchModalPr
   };
 
   // 검색 결과 클릭
-  const handleResultClick = (policy: PolicyCard) => {
+  const handleResultClick = (policy: SearchPolicyCard) => {
     router.push(`/youthyPolicy?id=${policy.id}`);
     onClose();
   };
@@ -213,14 +213,6 @@ export default function SearchModal({ isOpen, onClose, keywords }: SearchModalPr
                             </span>
                           </div>
                         </div>
-                        {policy.isHot && (
-                          <div className="ml-2">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              <TrendingUp className="w-3 h-3 mr-1" />
-                              인기
-                            </span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}

@@ -1,7 +1,7 @@
 'use client';
 
 import { Flame, ChevronRight, Calendar } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Card, CardTitle } from '../ui/card';
 import { PolicyCard as PolicyCardType } from '@/types/policy';
 
 interface PolicyCardProps {
@@ -13,14 +13,15 @@ export default function PolicyCard({ policy, className = '' }: PolicyCardProps) 
   console.log(policy.metadata.applicationUrl);
   return (
     <Card
-      className={`group relative overflow-hidden bg-white rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-200 hover:border-primary ${className}`}
+      className={`group h-[260px] relative overflow-hidden bg-white rounded-sm shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-2 border border-gray-200 hover:border-primary ${className}`}
     >
       {/* 콘텐츠 영역 */}
-      <div className="px-5 py-0">
-        <CardHeader className="p-0 mb-2">
-          <div className="flex items-center justify-between">
+      <div className="px-5 py-4 h-full flex flex-col">
+        {/* 헤더 영역 - 고정 높이 */}
+        <div className="h-16 mb-3">
+          <div className="flex items-start justify-between h-full">
             <CardTitle
-              className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors leading-tight"
+              className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors leading-tight flex-1 mr-2"
               style={{
                 display: '-webkit-box',
                 WebkitLineClamp: 2,
@@ -32,42 +33,42 @@ export default function PolicyCard({ policy, className = '' }: PolicyCardProps) 
             </CardTitle>
             {/* HOT 배지 */}
             {policy.isHot && (
-              <div className="flex items-center gap-1 bg-gradient-to-r from-orange-400 to-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg">
+              <div className="flex items-center gap-1 bg-gradient-to-r from-orange-400 to-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-lg flex-shrink-0">
                 <Flame className="w-3 h-3" />
                 HOT
               </div>
             )}
           </div>
-        </CardHeader>
-
-        {/* 카테고리 및 대상 정보 */}
-        <div className="flex items-center justify-between">
-          <div className="flex flex-wrap gap-2 mb-3">
-            <span
-              className={`px-2 py-1 bg-primary/10 text-gray-700 rounded-full text-xs font-medium`}
-            >
-              {policy.category}
-            </span>
-            <span className="px-2 py-1 bg-primary/10 text-gray-700 rounded-full text-xs font-medium">
-              {policy.target}
-            </span>
-            <span className="flex items-center gap-1 text-gray-500 text-xs">
-              <Calendar className="w-3 h-3" />
-              <span>{policy.deadline}</span>
-            </span>
-          </div>
-          {policy.isRecruiting && (
-            <div className="flex items-center gap-1 mb-3 pr-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs text-green-600 font-medium">모집중</span>
-            </div>
-          )}
         </div>
 
-        {/* 설명 */}
-        <CardContent className="p-0 mb-1">
+        {/* 카테고리 및 상태 정보 영역 - 고정 높이 */}
+        <div className="h-12 mb-3">
+          <div className="flex items-start justify-between h-full">
+            <div className="flex flex-wrap gap-2">
+              <span className="px-2 py-1 bg-primary/10 text-gray-700 rounded-full text-xs font-medium">
+                {policy.category}
+              </span>
+              <span className="px-2 py-1 bg-primary/10 text-gray-700 rounded-full text-xs font-medium">
+                {policy.target}
+              </span>
+              <span className="flex items-center gap-1 text-gray-500 text-xs">
+                <Calendar className="w-3 h-3" />
+                <span>{policy.deadline}</span>
+              </span>
+            </div>
+            {policy.isRecruiting && (
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-green-600 font-medium">모집중</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 설명 영역 - 확장 가능한 영역 */}
+        <div className="flex-1 mb-4">
           <p
-            className="text-sm text-gray-600 leading-relaxed"
+            className="text-sm text-gray-600 leading-relaxed mb-2"
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 2,
@@ -88,10 +89,10 @@ export default function PolicyCard({ policy, className = '' }: PolicyCardProps) 
           >
             신청마감 : {policy.deadline}
           </p>
-        </CardContent>
+        </div>
 
-        {/* 하단 액션 버튼 */}
-        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+        {/* 하단 액션 버튼 - 고정 위치 */}
+        <div className="h-10 flex items-center justify-between pt-3 border-t border-gray-100 mt-auto">
           <div className="flex items-center gap-3">
             <button className="text-xs text-gray-500 hover:text-primary transition-colors cursor-pointer">
               신청 가이드
