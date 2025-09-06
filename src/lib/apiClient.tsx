@@ -42,7 +42,7 @@ apiClient.interceptors.response.use(
           error.config.headers.Authorization = `Bearer ${newAccessToken}`;
           return apiClient.request(error.config);
         } catch (refreshError) {
-          console.error('리프레시 토큰 갱신 실패:', refreshError);
+          console.error('리프레시 토큰 갱신 오류:', refreshError);
           // 리프레시 토큰도 만료된 경우 로그아웃
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');

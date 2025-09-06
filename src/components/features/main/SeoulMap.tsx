@@ -1,21 +1,26 @@
-'use client';
-import React from 'react';
-import Image from 'next/image';
+import SeoulDistricts from '@/components/icons/SeoulDistricts';
+import { DistrictName } from '@/types/policy';
 
-type SeoulMapProps = {
-  onDistrictClick?: (districtId: string) => void;
-};
+interface SeoulMapProps {
+  onDistrictClick: (district: DistrictName) => void;
+  // selectedDistrict?: DistrictName | null;
+}
 
 export default function SeoulMap({ onDistrictClick }: SeoulMapProps) {
+  const handleClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    const target = e.target as SVGPathElement;
+    if (target.id) {
+      onDistrictClick(target.id as DistrictName);
+    }
+  };
+
   return (
-    <div className="flex flex-col justify-center items-center p-6 mt-20">
-      <h1 className="text-3xl font-bold mb-4">관심있는 지역을 클릭해보세요</h1>
-      <Image
-        src="/map-seoul.svg"
-        alt="서울 지도"
-        // className="w-auto h-auto"
-        width={900}
-        height={900}
+    <div className="w-full max-w-3xl flex flex-col items-center justify-center mx-auto mt-30">
+      <h1 className="text-[28px] font-bold">관심있는 지역을 클릭해보세요</h1>
+      <SeoulDistricts
+        className="w-full h-auto [&_path]:cursor-pointer [&_path]:transition-colors [&_path]:duration-200 [&_path:hover]:fill-[#91C5FF]"
+        onClick={handleClick}
+        // selectedDistrict={selectedDistrict}
       />
     </div>
   );
