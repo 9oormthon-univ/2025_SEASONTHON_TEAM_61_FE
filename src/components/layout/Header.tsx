@@ -9,8 +9,9 @@ export default function Header() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState('통합검색');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isToggleOpen, setIsToggleOpen] = useState(false);  
+  const categories = ["통합검색", "취업", "창업"];
 
-  const categories = ['통합검색', '취업', '창업'];
 
   return (
     <div className="w-full bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100 backdrop:blur supports-[backdrop-filter]:bg-background/60 ">
@@ -105,6 +106,21 @@ export default function Header() {
           </div>
         </div>
       </div>
+
+      <Bookmark className="w-8 h-8 text-black mr-2"/>
+      <div className="relative">
+      <UserRound className="w-8 h-8 text-black" onClick={() => setIsToggleOpen(!isToggleOpen)}/>
+        {isToggleOpen&&(
+          <>
+          <div className=" flex flex-col absolute top-full right-3 mt-1 w-35 h-fit bg-white border border-[#d2d2d2] rounded-[8px] shadow-lg z-10">
+            <span className="text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200" onClick={() => {router.push('/mypage'); setIsToggleOpen(false)}}>마이페이지</span> 
+            <span className="text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200">고객센터</span>
+            <span className="text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200">로그아웃</span>
+          </div>
+          </>
+        )}
+        </div>
+     </div>
     </div>
   );
 }
