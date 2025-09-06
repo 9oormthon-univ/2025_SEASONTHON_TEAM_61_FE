@@ -15,8 +15,8 @@ export default function SeoulMap({ onDistrictClick }: SeoulMapProps) {
   };
 
   return (
-    <div className="w-full max-w-3xl flex flex-col items-center justify-center mx-auto mt-30">
-      <h1 className="text-[28px] font-bold">관심있는 지역을 클릭해보세요</h1>
+    <div className="w-full max-w-3xl flex flex-col items-center justify-center mx-auto">
+     
       <SeoulDistricts
         className="w-full h-auto [&_path]:cursor-pointer [&_path]:transition-colors [&_path]:duration-200 [&_path:hover]:fill-[#91C5FF]"
         onClick={handleClick}

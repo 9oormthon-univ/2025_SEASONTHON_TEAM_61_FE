@@ -1,7 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useRef, useEffect } from 'react';
 import CardGrid from '../../common/CardGrid';
 import { ChevronRight, Search, RefreshCw, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import CardRow from '../../common/CardRow';
@@ -14,6 +14,10 @@ export default function Main() {
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictName | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
+  
+  // 지도 스크롤을 위한 ref
+  const mapSectionRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
 
   // 필터 상태 관리
   const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false);
@@ -283,9 +287,33 @@ export default function Main() {
 
   const router = useRouter();
 
+  // URL 파라미터 확인하여 지도로 스크롤
+  useEffect(() => {
+    const scrollToMap = searchParams.get('scrollToMap');
+    if (scrollToMap === 'true') {
+      // 페이지 로딩 후 잠시 대기한 다음 스크롤
+      setTimeout(() => {
+        handleScrollToMap();
+      }, 100);
+    }
+  }, [searchParams]);
+
   // 카드 클릭 시 PolicyList 페이지로 이동하는 핸들러
   const handleCardClick = (category: string) => {
     router.push(`/policyList?category=${encodeURIComponent(category)}`);
+  };
+
+  // 지도 바로가기 클릭 핸들러
+  const handleScrollToMap = () => {
+    if (mapSectionRef.current) {
+      const elementTop = mapSectionRef.current.offsetTop;
+      const offsetPosition = elementTop - 100; // 100px 위쪽 여백 추가
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
   };
 
   return (
@@ -305,14 +333,23 @@ export default function Main() {
           유씨가 추천해주는 맞춤형 정보를 만나보세요
         </p>
 
-        <p className="text-[20px] font-bold text-primary border-b border-primary">지도 바로가기</p>
+        <button 
+          onClick={handleScrollToMap}
+          className="text-[20px] font-bold text-primary border-b border-primary hover:text-primary/80 transition-colors cursor-pointer"
+        >
+          지도 바로가기
+        </button>
         <div>
           <div className="flex flex-row items-center gap-1 w-full justify-end mb-4 cursor-pointer text-primary hover:text-primary/75 transition-colors">
             <p className="text-[16px] text-right font-semibold">더보기</p>
             <ChevronRight className="w-5 h-5" />
           </div>
+        
           <CardRow />
-          <SeoulMap onDistrictClick={handleDistrictClick} />
+          <div ref={mapSectionRef} data-map-section className="mt-30 flex flex-col items-center justify-center">
+          <h1 className="text-[28px] font-bold">관심있는 지역을 클릭해보세요</h1>
+          <SeoulMap onDistrictClick={handleDistrictClick}  />
+          </div>
         </div>
 
         {/* 선택된 구의 정책 카드 섹션 */}
