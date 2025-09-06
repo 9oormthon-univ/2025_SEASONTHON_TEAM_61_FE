@@ -1,6 +1,5 @@
 'use client'
 
-import { BriefcaseBusiness } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -51,8 +50,11 @@ export default function CardGrid({ cards, className = "", selectedCards = [], on
 
   // props로 받은 selectedCards가 변경되면 내부 상태도 업데이트
   useEffect(() => {
-    setInternalSelectedCards(selectedCards);
-  }, [selectedCards]);
+    // 배열이 실제로 다른 경우에만 업데이트
+    if (JSON.stringify(selectedCards) !== JSON.stringify(internalSelectedCards)) {
+      setInternalSelectedCards(selectedCards);
+    }
+  }, [selectedCards, internalSelectedCards]);
 
   return (
     <div className={`flex flex-col gap-4 w-full items-center ${className}`}>
