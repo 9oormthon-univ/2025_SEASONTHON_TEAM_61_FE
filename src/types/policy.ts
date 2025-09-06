@@ -15,7 +15,7 @@ export interface PolicyCard {
 }
 
 export interface SearchPolicyCard {
-  id: number;
+  policyNo: number;
   policyName: string;
   policySummary: string;
   category: string;
