@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CardGrid from '../../common/CardGrid';
 import { ChevronRight, Search, RefreshCw, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import CardRow from '../../common/CardRow';
@@ -9,8 +9,8 @@ import SeoulMap from './SeoulMap';
 import PolicyCard from '../../common/PolicyCard';
 import { DistrictName, PolicyCard as PolicyCardType } from '@/types/policy';
 // import { districtPolicies } from '@/data/districtPolicies';
-import { getDistrictPolicies } from '@/components/common/api/seoulMap';
-
+import { getDistrictPolicies } from '@/components/features/main/api/districtPolicies';
+import Loading from '@/components/common/Loading';
 interface DistrictPolicies {
   [key: string]: PolicyCardType[];
 }
@@ -19,8 +19,9 @@ export default function Main() {
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictName | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
-
-  const districtPolicies = getDistrictPolicies() as unknown as DistrictPolicies;
+  const [districtPolicies, setDistrictPolicies] = useState<DistrictPolicies>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // 필터 상태 관리
   const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false);
@@ -103,6 +104,24 @@ export default function Main() {
   ];
 
   const recruitmentStatusOptions = ['전체', '모집중', '마감임박', '마감', '상시모집', '예정'];
+
+  useEffect(() => {
+    const fetchDistrictPolicies = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getDistrictPolicies();
+        setDistrictPolicies(data);
+      } catch {
+        setError('정책 데이터를 불러오는데 실패했습니다.');
+        setDistrictPolicies({});
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDistrictPolicies();
+  }, []);
 
   // 지역명 매핑 (영문 -> 한글)
   const districtNameMap: Record<DistrictName, string> = {
@@ -352,368 +371,389 @@ export default function Main() {
         {/* 선택된 구의 정책 카드 섹션 */}
         {selectedDistrict && (
           <div className="w-180 mx-auto">
-            {/* 검색 및 필터 섹션 */}
-            <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-6 mb-8">
-              {/* 카테고리 필터 */}
-              <div className="flex flex-wrap gap-2 mb-6">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-sm text-base font-medium transition-colors ${
-                      selectedCategory === category
-                        ? 'bg-primary text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
+            {/* 로딩 상태 */}
+            {isLoading && <Loading />}
 
-              {/* 검색 및 필터 옵션 */}
-              <div className="flex flex-col gap-4">
-                {/* 검색바 */}
-                <div className="flex flex-col lg:flex-row gap-4 items-center">
-                  <div className="flex-1 relative">
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="지역명으로 검색"
-                      className="w-full px-4 py-2 border border-primary rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary size-5" />
-                  </div>
-
-                  <button
-                    onClick={handleReset}
-                    className="flex items-center gap-2 px-3 py-2 bg-red-100 text-red-700 rounded-sm hover:bg-red-200 transition-colors"
-                  >
-                    <RefreshCw className="size-4" />
-                    초기화
-                  </button>
-                </div>
-
-                <div className="flex flex-row items-center justify-between w-full">
-                  {/* 5가지 필터 버튼 */}
-                  <div className="flex flex-wrap gap-2">
-                    {/* 지역 필터 */}
-                    <div className="relative">
-                      <button
-                        onClick={() => toggleDropdown('region')}
-                        className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
-                          isRegionDropdownOpen || selectedRegions.length > 0
-                            ? 'text-primary border border-primary'
-                            : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
-                        }`}
-                      >
-                        지역{' '}
-                        {isRegionDropdownOpen ? (
-                          <ChevronUp className="size-4" />
-                        ) : (
-                          <ChevronDown className="size-4" />
-                        )}
-                      </button>
-
-                      {isRegionDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
-                          {regionOptions.map((option) => (
-                            <label
-                              key={option}
-                              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedRegions.includes(option)}
-                                onChange={() => handleFilterSelect('region', option)}
-                                className="rounded"
-                              />
-                              <span className="text-sm">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* 세부지역 필터 */}
-                    <div className="relative">
-                      <button
-                        onClick={() => toggleDropdown('detailRegion')}
-                        className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
-                          isDetailRegionDropdownOpen || selectedDetailRegions.length > 0
-                            ? 'text-primary border border-primary'
-                            : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
-                        }`}
-                      >
-                        세부지역{' '}
-                        {isDetailRegionDropdownOpen ? (
-                          <ChevronUp className="size-4" />
-                        ) : (
-                          <ChevronDown className="size-4" />
-                        )}
-                      </button>
-
-                      {isDetailRegionDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
-                          {detailRegionOptions.map((option) => (
-                            <label
-                              key={option}
-                              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedDetailRegions.includes(option)}
-                                onChange={() => handleFilterSelect('detailRegion', option)}
-                                className="rounded"
-                              />
-                              <span className="text-sm">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* 대상 필터 */}
-                    <div className="relative">
-                      <button
-                        onClick={() => toggleDropdown('target')}
-                        className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
-                          isTargetDropdownOpen || selectedTargets.length > 0
-                            ? 'text-primary border border-primary'
-                            : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
-                        }`}
-                      >
-                        대상{' '}
-                        {isTargetDropdownOpen ? (
-                          <ChevronUp className="size-4" />
-                        ) : (
-                          <ChevronDown className="size-4" />
-                        )}
-                      </button>
-
-                      {isTargetDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
-                          {targetOptions.map((option) => (
-                            <label
-                              key={option}
-                              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedTargets.includes(option)}
-                                onChange={() => handleFilterSelect('target', option)}
-                                className="rounded"
-                              />
-                              <span className="text-sm">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* 담당기관 필터 */}
-                    <div className="relative">
-                      <button
-                        onClick={() => toggleDropdown('institution')}
-                        className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
-                          isInstitutionDropdownOpen || selectedInstitutions.length > 0
-                            ? 'text-primary border border-primary'
-                            : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
-                        }`}
-                      >
-                        담당기관{' '}
-                        {isInstitutionDropdownOpen ? (
-                          <ChevronUp className="size-4" />
-                        ) : (
-                          <ChevronDown className="size-4" />
-                        )}
-                      </button>
-
-                      {isInstitutionDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
-                          {institutionOptions.map((option) => (
-                            <label
-                              key={option}
-                              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedInstitutions.includes(option)}
-                                onChange={() => handleFilterSelect('institution', option)}
-                                className="rounded"
-                              />
-                              <span className="text-sm">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    {/* 모집현황 필터 */}
-                    <div className="relative">
-                      <button
-                        onClick={() => toggleDropdown('recruitment')}
-                        className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
-                          isRecruitmentDropdownOpen || selectedRecruitmentStatus.length > 0
-                            ? 'text-primary border border-primary'
-                            : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
-                        }`}
-                      >
-                        모집현황{' '}
-                        {isRecruitmentDropdownOpen ? (
-                          <ChevronUp className="size-4" />
-                        ) : (
-                          <ChevronDown className="size-4" />
-                        )}
-                      </button>
-
-                      {isRecruitmentDropdownOpen && (
-                        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
-                          {recruitmentStatusOptions.map((option) => (
-                            <label
-                              key={option}
-                              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={selectedRecruitmentStatus.includes(option)}
-                                onChange={() => handleFilterSelect('recruitment', option)}
-                                className="rounded"
-                              />
-                              <span className="text-sm">{option}</span>
-                            </label>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-row gap-2">
-                    <span
-                      className={`${selectedSort === 'latest' ? 'text-primary font-semibold' : 'text-gray-700'} cursor-pointer flex items-center gap-0.5 transition-all`}
-                      onClick={() => setSelectedSort('latest')}
-                    >
-                      {selectedSort === 'latest' && <Check className="size-4" />}
-                      최신순
-                    </span>
-                    <span
-                      className={`${selectedSort === 'deadline' ? 'text-primary font-semibold' : 'text-gray-700'} cursor-pointer flex items-center gap-0.5 transition-all`}
-                      onClick={() => setSelectedSort('deadline')}
-                    >
-                      {selectedSort === 'deadline' && <Check className="size-4" />}
-                      마감순
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* 활성 필터 표시 */}
-              <div className="flex flex-wrap gap-2 mt-4">
-                {selectedCategory !== '전체' && (
-                  <span className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1">
-                    {selectedCategory}
-                    <button
-                      onClick={() => handleRemoveFilter('category', selectedCategory)}
-                      className="ml-1 hover:text-red-500 transition-colors"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {searchTerm && (
-                  <span className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1">
-                    {searchTerm}
-                    <button
-                      onClick={() => handleRemoveFilter('search', searchTerm)}
-                      className="ml-1 hover:text-red-500 transition-colors"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {selectedRegions.map((region) => (
-                  <span
-                    key={region}
-                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
-                  >
-                    {region}
-                    <button
-                      onClick={() => handleRemoveFilter('region', region)}
-                      className="ml-1 hover:text-red-500 transition-colors"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                {selectedDetailRegions.map((detailRegion) => (
-                  <span
-                    key={detailRegion}
-                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
-                  >
-                    {detailRegion}
-                    <button
-                      onClick={() => handleRemoveFilter('detailRegion', detailRegion)}
-                      className="ml-1 hover:text-red-500 transition-colors"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                {selectedTargets.map((target) => (
-                  <span
-                    key={target}
-                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
-                  >
-                    {target}
-                    <button
-                      onClick={() => handleRemoveFilter('target', target)}
-                      className="ml-1 hover:text-red-500 transition-colors"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                {selectedInstitutions.map((institution) => (
-                  <span
-                    key={institution}
-                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
-                  >
-                    {institution}
-                    <button
-                      onClick={() => handleRemoveFilter('institution', institution)}
-                      className="ml-1 hover:text-red-500 transition-colors"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                {selectedRecruitmentStatus.map((status) => (
-                  <span
-                    key={status}
-                    className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
-                  >
-                    {status}
-                    <button
-                      onClick={() => handleRemoveFilter('recruitment', status)}
-                      className="ml-1 hover:text-red-500 transition-colors"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* 정책 카드 그리드 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredPolicies.map((policy) => (
-                <PolicyCard key={policy.id} policy={policy} />
-              ))}
-            </div>
-
-            {filteredPolicies.length === 0 && (
+            {/* 에러 상태 */}
+            {error && (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">해당 조건에 맞는 정책이 없습니다.</p>
+                <p className="text-red-500 text-lg mb-4">{error}</p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-primary text-white rounded-sm hover:bg-primary/90 transition-colors"
+                >
+                  다시 시도
+                </button>
               </div>
+            )}
+
+            {/* 정책 데이터가 있을 때만 필터와 카드 표시 */}
+            {!isLoading && !error && (
+              <>
+                {/* 검색 및 필터 섹션 */}
+                <div className="bg-white rounded-sm shadow-sm border border-gray-100 p-6 mb-8">
+                  {/* 카테고리 필터 */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {categories.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`px-4 py-2 rounded-sm text-base font-medium transition-colors ${
+                          selectedCategory === category
+                            ? 'bg-primary text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* 검색 및 필터 옵션 */}
+                  <div className="flex flex-col gap-4">
+                    {/* 검색바 */}
+                    <div className="flex flex-col lg:flex-row gap-4 items-center">
+                      <div className="flex-1 relative">
+                        <input
+                          type="text"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          placeholder="지역명으로 검색"
+                          className="w-full px-4 py-2 border border-primary rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary size-5" />
+                      </div>
+
+                      <button
+                        onClick={handleReset}
+                        className="flex items-center gap-2 px-3 py-2 bg-red-100 text-red-700 rounded-sm hover:bg-red-200 transition-colors"
+                      >
+                        <RefreshCw className="size-4" />
+                        초기화
+                      </button>
+                    </div>
+
+                    <div className="flex flex-row items-center justify-between w-full">
+                      {/* 5가지 필터 버튼 */}
+                      <div className="flex flex-wrap gap-2">
+                        {/* 지역 필터 */}
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleDropdown('region')}
+                            className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
+                              isRegionDropdownOpen || selectedRegions.length > 0
+                                ? 'text-primary border border-primary'
+                                : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
+                            }`}
+                          >
+                            지역{' '}
+                            {isRegionDropdownOpen ? (
+                              <ChevronUp className="size-4" />
+                            ) : (
+                              <ChevronDown className="size-4" />
+                            )}
+                          </button>
+
+                          {isRegionDropdownOpen && (
+                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
+                              {regionOptions.map((option) => (
+                                <label
+                                  key={option}
+                                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedRegions.includes(option)}
+                                    onChange={() => handleFilterSelect('region', option)}
+                                    className="rounded"
+                                  />
+                                  <span className="text-sm">{option}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 세부지역 필터 */}
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleDropdown('detailRegion')}
+                            className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
+                              isDetailRegionDropdownOpen || selectedDetailRegions.length > 0
+                                ? 'text-primary border border-primary'
+                                : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
+                            }`}
+                          >
+                            세부지역{' '}
+                            {isDetailRegionDropdownOpen ? (
+                              <ChevronUp className="size-4" />
+                            ) : (
+                              <ChevronDown className="size-4" />
+                            )}
+                          </button>
+
+                          {isDetailRegionDropdownOpen && (
+                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
+                              {detailRegionOptions.map((option) => (
+                                <label
+                                  key={option}
+                                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedDetailRegions.includes(option)}
+                                    onChange={() => handleFilterSelect('detailRegion', option)}
+                                    className="rounded"
+                                  />
+                                  <span className="text-sm">{option}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 대상 필터 */}
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleDropdown('target')}
+                            className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
+                              isTargetDropdownOpen || selectedTargets.length > 0
+                                ? 'text-primary border border-primary'
+                                : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
+                            }`}
+                          >
+                            대상{' '}
+                            {isTargetDropdownOpen ? (
+                              <ChevronUp className="size-4" />
+                            ) : (
+                              <ChevronDown className="size-4" />
+                            )}
+                          </button>
+
+                          {isTargetDropdownOpen && (
+                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
+                              {targetOptions.map((option) => (
+                                <label
+                                  key={option}
+                                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedTargets.includes(option)}
+                                    onChange={() => handleFilterSelect('target', option)}
+                                    className="rounded"
+                                  />
+                                  <span className="text-sm">{option}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 담당기관 필터 */}
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleDropdown('institution')}
+                            className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
+                              isInstitutionDropdownOpen || selectedInstitutions.length > 0
+                                ? 'text-primary border border-primary'
+                                : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
+                            }`}
+                          >
+                            담당기관{' '}
+                            {isInstitutionDropdownOpen ? (
+                              <ChevronUp className="size-4" />
+                            ) : (
+                              <ChevronDown className="size-4" />
+                            )}
+                          </button>
+
+                          {isInstitutionDropdownOpen && (
+                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
+                              {institutionOptions.map((option) => (
+                                <label
+                                  key={option}
+                                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedInstitutions.includes(option)}
+                                    onChange={() => handleFilterSelect('institution', option)}
+                                    className="rounded"
+                                  />
+                                  <span className="text-sm">{option}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        {/* 모집현황 필터 */}
+                        <div className="relative">
+                          <button
+                            onClick={() => toggleDropdown('recruitment')}
+                            className={`flex items-center gap-1 px-4 py-2 rounded-sm text-sm font-medium transition-colors ${
+                              isRecruitmentDropdownOpen || selectedRecruitmentStatus.length > 0
+                                ? 'text-primary border border-primary'
+                                : 'text-gray-700 hover:bg-gray-200 border border-[#A1A1A1]'
+                            }`}
+                          >
+                            모집현황{' '}
+                            {isRecruitmentDropdownOpen ? (
+                              <ChevronUp className="size-4" />
+                            ) : (
+                              <ChevronDown className="size-4" />
+                            )}
+                          </button>
+
+                          {isRecruitmentDropdownOpen && (
+                            <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-sm shadow-lg z-10 max-h-60 overflow-y-auto">
+                              {recruitmentStatusOptions.map((option) => (
+                                <label
+                                  key={option}
+                                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedRecruitmentStatus.includes(option)}
+                                    onChange={() => handleFilterSelect('recruitment', option)}
+                                    className="rounded"
+                                  />
+                                  <span className="text-sm">{option}</span>
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-row gap-2">
+                        <span
+                          className={`${selectedSort === 'latest' ? 'text-primary font-semibold' : 'text-gray-700'} cursor-pointer flex items-center gap-0.5 transition-all`}
+                          onClick={() => setSelectedSort('latest')}
+                        >
+                          {selectedSort === 'latest' && <Check className="size-4" />}
+                          최신순
+                        </span>
+                        <span
+                          className={`${selectedSort === 'deadline' ? 'text-primary font-semibold' : 'text-gray-700'} cursor-pointer flex items-center gap-0.5 transition-all`}
+                          onClick={() => setSelectedSort('deadline')}
+                        >
+                          {selectedSort === 'deadline' && <Check className="size-4" />}
+                          마감순
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 활성 필터 표시 */}
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {selectedCategory !== '전체' && (
+                      <span className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1">
+                        {selectedCategory}
+                        <button
+                          onClick={() => handleRemoveFilter('category', selectedCategory)}
+                          className="ml-1 hover:text-red-500 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    )}
+                    {searchTerm && (
+                      <span className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1">
+                        {searchTerm}
+                        <button
+                          onClick={() => handleRemoveFilter('search', searchTerm)}
+                          className="ml-1 hover:text-red-500 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    )}
+                    {selectedRegions.map((region) => (
+                      <span
+                        key={region}
+                        className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
+                      >
+                        {region}
+                        <button
+                          onClick={() => handleRemoveFilter('region', region)}
+                          className="ml-1 hover:text-red-500 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                    {selectedDetailRegions.map((detailRegion) => (
+                      <span
+                        key={detailRegion}
+                        className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
+                      >
+                        {detailRegion}
+                        <button
+                          onClick={() => handleRemoveFilter('detailRegion', detailRegion)}
+                          className="ml-1 hover:text-red-500 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                    {selectedTargets.map((target) => (
+                      <span
+                        key={target}
+                        className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
+                      >
+                        {target}
+                        <button
+                          onClick={() => handleRemoveFilter('target', target)}
+                          className="ml-1 hover:text-red-500 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                    {selectedInstitutions.map((institution) => (
+                      <span
+                        key={institution}
+                        className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
+                      >
+                        {institution}
+                        <button
+                          onClick={() => handleRemoveFilter('institution', institution)}
+                          className="ml-1 hover:text-red-500 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                    {selectedRecruitmentStatus.map((status) => (
+                      <span
+                        key={status}
+                        className="px-3 py-1 bg-primary/10 rounded-full text-sm flex items-center gap-1"
+                      >
+                        {status}
+                        <button
+                          onClick={() => handleRemoveFilter('recruitment', status)}
+                          className="ml-1 hover:text-red-500 transition-colors"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 정책 카드 그리드 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filteredPolicies.map((policy) => (
+                    <PolicyCard key={policy.id} policy={policy} />
+                  ))}
+                </div>
+
+                {filteredPolicies.length === 0 && (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500 text-lg">해당 조건에 맞는 정책이 없습니다.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
