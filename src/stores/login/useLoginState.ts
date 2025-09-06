@@ -32,26 +32,17 @@ export const useLoginState = create<LoginState>((set, get) => ({
     });
   },
 
-  logout: () => {
-    // 로컬 스토리지에서 토큰과 사용자 정보 제거
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('memberId');
-
-    set({
-      isLoggedIn: false,
-      accessToken: null,
-      refreshToken: null,
-      memberId: null,
-    });
   },
 
   initializeAuth: () => {
     // 페이지 로드 시 로컬 스토리지에서 토큰과 사용자 정보 복원
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      const refreshToken = localStorage.getItem('refreshToken');
-      const memberIdStr = localStorage.getItem('memberId');
+
+      const response = await fetch('/api/me', {
+        method: 'GET',
+        credentials: 'include', // 쿠키 전송
+      });
+
 
       if (accessToken && memberIdStr) {
         const memberId = parseInt(memberIdStr, 10);
