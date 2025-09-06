@@ -12,7 +12,7 @@ export default function KakaoRedirection() {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
   const redirectURI = 'http://localhost:3000/kakao/callback';
-  const { setTokens } = useLoginState();
+  const { setTokens, setIsLoggedIn } = useLoginState();
 
   useEffect(() => {
     if (code) {
@@ -34,13 +34,14 @@ export default function KakaoRedirection() {
         .then((res) => {
           console.log('카카오 로그인 응답:', res);
 
-          const { accessToken, refreshToken, memberId } = res.data;
+          const { access } = res.data;
 
-          if (accessToken && memberId) {
-            // 토큰과 사용자 ID를 로컬 스토리지에 저장
-            setTokens(accessToken, refreshToken, memberId);
+          if (access) {
+            // 토큰 로컬 스토리지에 저장
+            setTokens(access, null);
+            setIsLoggedIn(true);
 
-            console.log('로그인 성공! 토큰과 사용자 ID가 저장되었습니다.');
+            alert('로그인에 성공했습니다!');
 
             // 홈페이지로 리다이렉트
             router.push('/');
