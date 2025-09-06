@@ -1,9 +1,8 @@
 'use client';
-
-import { BriefcaseBusiness } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 
 interface CardData {
@@ -17,6 +16,7 @@ interface CardGridProps {
   className?: string;
   selectedCards?: string[];
   onSelectionChange?: (selectedTitles: string[]) => void;
+  onCardClick?: (title: string) => void; // 카드 클릭 핸들러 추가
 }
 
 
@@ -28,8 +28,10 @@ export default function CardGrid({
   className = '',
   selectedCards = DEFAULT_SELECTED_CARDS,
   onSelectionChange,
+  onCardClick,
 }: CardGridProps) {
   const [internalSelectedCards, setInternalSelectedCards] = useState<string[]>(selectedCards);
+  const router = useRouter();
 
 
   // 기본 카드 데이터 (8개)
@@ -50,9 +52,15 @@ export default function CardGrid({
   const firstRow = cardData.slice(0, 4);
   const secondRow = cardData.slice(4, 8);
 
-  // 카드 선택/해제 함수
-  const toggleCardSelection = (title: string) => {
+  // 카드 클릭 핸들러 함수
+  const handleCardClick = (title: string) => {
+    // onCardClick이 있으면 (메인페이지에서) 해당 핸들러 실행
+    if (onCardClick) {
+      onCardClick(title);
+      return;
+    }
 
+    // onCardClick이 없으면 기존 선택/해제 로직 실행
     const newSelection = internalSelectedCards.includes(title)
       ? internalSelectedCards.filter((card) => card !== title)
       : [...internalSelectedCards, title];
@@ -85,7 +93,7 @@ export default function CardGrid({
                   ? 'bg-[#1082FF] text-white border-2 border-[#1082FF]'
                   : 'bg-white text-black border-2 border-transparent'
               }`}
-              onClick={() => toggleCardSelection(card.title)}
+              onClick={() => handleCardClick(card.title)}
             >
               <CardHeader className="pb-2">
                 <CardTitle
@@ -120,7 +128,7 @@ export default function CardGrid({
                   ? 'bg-[#1082FF] text-white border-2 border-[#1082FF]'
                   : 'bg-white text-black border-2 border-transparent'
               }`}
-              onClick={() => toggleCardSelection(card.title)}
+              onClick={() => handleCardClick(card.title)}
             >
               <CardHeader className="pb-2">
                 <CardTitle

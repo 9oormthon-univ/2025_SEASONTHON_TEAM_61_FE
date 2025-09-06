@@ -19,10 +19,12 @@ export default function Header() {
           <Image
             src="/img/logo.png"
             alt="logo"
-            className="w-30 h-8 cursor-pointer hover:scale-105 transition-transform duration-200"
+            className="w-32 h-10 cursor-pointer hover:scale-105 transition-transform duration-200"
             onClick={() => router.push('/')}
-            width={48}
-            height={40}
+            width={136}
+            height={42}
+            priority
+            quality={100}
           />
           <p className="text-sm text-gray-500">청년 정책, 지도에서 콕!</p>
         </div>
@@ -98,17 +100,18 @@ export default function Header() {
             </button>
             <button
               className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
-              onClick={() => router.push('/login')}
+              // onClick={() => router.push('/login')}
             >
+              <div className='relative'>
               <UserRound
                 className="w-5 h-5 text-gray-600"
                 onClick={() => setIsToggleOpen(!isToggleOpen)}
               />
               {isToggleOpen && (
                 <>
-                  <div className=" flex flex-col absolute top-full right-3 mt-1 w-35 h-fit bg-white border border-[#d2d2d2] rounded-[8px] shadow-lg z-10">
+                  <div className=" flex flex-col absolute top-8 right-0 mt-1 w-30 h-fit bg-white border border-[#d2d2d2] rounded-[8px] shadow-lg z-10">
                     <span
-                      className="text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200"
+                      className="rounded-t-[8px] text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200"
                       onClick={() => {
                         router.push('/mypage');
                         setIsToggleOpen(false);
@@ -116,15 +119,14 @@ export default function Header() {
                     >
                       마이페이지
                     </span>
-                    <span className="text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200">
-                      고객센터
-                    </span>
-                    <span className="text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200">
+                  
+                    <span className="rounded-b-[8px] text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200">
                       로그아웃
                     </span>
                   </div>
                 </>
               )}
+              </div>
             </button>
           </div>
         </div>

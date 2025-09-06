@@ -1,5 +1,5 @@
 
-import MyPage from "@/components/mypage/Mypage";
+import MyPage from "@/components/features/mypage/Mypage";
 
 
 export default function MyPagePage(){

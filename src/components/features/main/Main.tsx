@@ -1,13 +1,19 @@
 'use client';
 
-// import { useRouter } from 'next/navigation';
-// import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import CardGrid from '../../common/CardGrid';
 import { ChevronRight } from 'lucide-react';
 import CardRow from '../../common/CardRow';
 import SeoulMap from './SeoulMap';
 
 export default function Main() {
+  const router = useRouter();
+
+  // 카드 클릭 시 PolicyList 페이지로 이동하는 핸들러
+  const handleCardClick = (category: string) => {
+    router.push(`/policyList?category=${encodeURIComponent(category)}`);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center w-full">
       <div className="flex flex-col min-h-[527px] w-full bg-[#d9d9d9] justify-center items-center p-8">
@@ -15,7 +21,7 @@ export default function Main() {
           유씨에서 나에게 필요했던 청년 정책을 편리하게 찾아보세요
         </p>
         <div className="w-full max-w-6xl">
-          <CardGrid />
+          <CardGrid onCardClick={handleCardClick} />
         </div>
       </div>
       <div className="flex flex-col items-center justify-center w-[80%] mx-auto mt-[90px]">
