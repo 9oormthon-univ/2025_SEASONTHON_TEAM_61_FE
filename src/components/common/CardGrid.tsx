@@ -1,8 +1,9 @@
-'use client'
+'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
 import { useState, useEffect, useMemo, useCallback } from "react";
+
 
 interface CardData {
   id: number;
@@ -16,6 +17,7 @@ interface CardGridProps {
   selectedCards?: string[];
   onSelectionChange?: (selectedTitles: string[]) => void;
 }
+
 
 // 기본 빈 배열을 상수로 정의하여 참조 안정성 확보
 const DEFAULT_SELECTED_CARDS: string[] = [];
@@ -62,6 +64,7 @@ export default function CardGrid({ cards, className = "", selectedCards = DEFAUL
   }, [selectedCards, internalSelectedCards]);
 
   return (
+
     <div className={`flex flex-col gap-4 w-full items-center ${className}`}>
       {/* 첫 번째 줄 - 4개 카드 */}
       <div className="grid grid-cols-4 gap-4">
@@ -137,6 +140,7 @@ export default function CardGrid({ cards, className = "", selectedCards = DEFAUL
             </Card>
           );
         })}
+
       </div>
     </div>
   );
