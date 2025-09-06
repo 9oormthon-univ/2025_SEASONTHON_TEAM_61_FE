@@ -1,88 +1,134 @@
-"use client"
+'use client';
 
-import { Bookmark, ChevronDown, MapPin, Search, UserRound } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-
+import { Bookmark, ChevronDown, MapPin, Search, UserRound } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import Image from 'next/image';
 
 export default function Header() {
-    const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState("통합검색");
+  const router = useRouter();
+  const [selectedCategory, setSelectedCategory] = useState('통합검색');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  const categories = ["통합검색", "취업", "창업"];
+  const [isToggleOpen, setIsToggleOpen] = useState(false);
+  const categories = ['통합검색', '취업', '창업'];
 
   return (
-   <div className="w-full">
-    <div className="flex flex-row items-center w-full gap-4 justify-between px-20 py-4">
-     <div className="flex flex-row items-center">
-      <img src="/img/logo.png" alt="logo" className="w-52 mr-9" onClick={() => router.push('/')}/>
-      <h1 className="font-bold text-[20px] mt-1">청년 정책, 지도에서 콕!</h1>
-     </div>
-
-     <div className="flex flex-row items-center gap-4">
-      <div className="flex flex-row items-center gap-1 mr-15">
-       <MapPin className="w-5 h-5 text-[#5c5c5c]"/>
-       <p className="text-[18px] font-semibold text-[#5c5c5c] border-b border-[#5c5c5c]">서울시</p>
-       <ChevronDown className="w-5 h-5" />
-      </div>
-
-      <div className="flex flex-row items-center gap-1 mr-10">
-       <p className="text-[18px] font-bold text-[#1082ff] mr-2">1</p>
-       <span className="text-[18px] font-semibold text-gray-700 mr-14">취업</span>
-       <ChevronDown className="w-5 h-5" />
-      </div>
-
-      {/* 검색 입력 필드 with 내장 카테고리 드롭다운 */}
-      <div className="relative mr-3">
-       <div className="flex items-center border border-[#d2d2d2] rounded-[6px] bg-white w-[450px] h-10">
-        {/* 카테고리 드롭다운 (input 내부 왼쪽) */}
-        <div className="relative">
-         <button 
-           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-           className="flex items-center gap-1 px-3 py-2 hover:bg-gray-50 rounded-l-[6px] border-r border-gray-200"
-         >
-           <span className="text-[14px] font-semibold text-gray-700">{selectedCategory}</span>
-           <ChevronDown className={`w-4 h-4 transition-transform text-gray-500 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-         </button>
-         
-         {isDropdownOpen && (
-           <div className="absolute top-full left-0 mt-1 w-28 bg-white border border-[#d2d2d2] rounded-[6px] shadow-lg z-10">
-             {categories.map((category) => (
-               <button
-                 key={category}
-                 onClick={() => {
-                   setSelectedCategory(category);
-                   setIsDropdownOpen(false);
-                 }}
-                 className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 first:rounded-t-[6px] last:rounded-b-[6px] ${
-                   selectedCategory === category ? 'bg-blue-50 text-[#1082ff] font-semibold' : ''
-                 }`}
-               >
-                 {category}
-               </button>
-             ))}
-           </div>
-         )}
+    <div className="w-full bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100 backdrop:blur supports-[backdrop-filter]:bg-background/60 ">
+      <div className="flex flex-row items-center w-full gap-6 justify-between px-6 py-4 max-w-7xl mx-auto">
+        <div className="flex flex-row items-center gap-4">
+          <Image
+            src="/img/logo.png"
+            alt="logo"
+            className="w-30 h-8 cursor-pointer hover:scale-105 transition-transform duration-200"
+            onClick={() => router.push('/')}
+            width={48}
+            height={40}
+          />
+          <p className="text-sm text-gray-500">청년 정책, 지도에서 콕!</p>
         </div>
 
-        {/* 검색 입력 */}
-        <input 
-          type="text" 
-          placeholder={`청년정책을 검색해보세요.`}
-          className="flex-1 px-3 py-2 bg-transparent outline-none text-[14px] w-[419px]"
-        />
-        
-        {/* 검색 아이콘 */}
-        <Search className="w-5 h-5 text-gray-400 mr-3" />
-       </div>
+        <div className="flex flex-row items-center gap-6">
+          {/* 지역 선택 */}
+          <div className="flex flex-row items-center gap-2 px-4 h-10 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer">
+            <MapPin className="w-4 h-4 text-gray-600" />
+            <span className="text-sm font-semibold text-gray-700">서울시</span>
+            <ChevronDown className="w-4 h-4 text-gray-500" />
+          </div>
+
+          {/* 카테고리 선택 */}
+          <div className="flex flex-row items-center gap-2 px-4 h-10 bg-primary/10 rounded-xl hover:bg-primary/30 transition-colors cursor-pointer">
+            <span className="text-sm font-bold text-primary">1</span>
+            <span className="text-sm font-semibold text-gray-700">취업</span>
+            <ChevronDown className="w-4 h-4 text-gray-500" />
+          </div>
+
+          {/* 검색 입력 필드 */}
+          <div className="relative">
+            <div className="flex items-center bg-gray-50 rounded-xl w-[400px] pl-0.5 pr-4 h-10 border border-gray-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all duration-200">
+              {/* 카테고리 드롭다운 */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <span className="text-sm font-semibold text-gray-700">{selectedCategory}</span>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform text-gray-500 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {isDropdownOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-32 bg-white border border-gray-200 rounded-xl shadow-lg z-10 overflow-hidden">
+                    {categories.map((category) => (
+                      <button
+                        key={category}
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 transition-colors ${
+                          selectedCategory === category
+                            ? 'bg-primary/10 text-primary font-semibold'
+                            : 'text-gray-700'
+                        }`}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 검색 입력 */}
+              <input
+                type="text"
+                placeholder="청년정책을 검색해보세요"
+                className="flex-1 px-3 py-2 bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400"
+              />
+
+              {/* 검색 아이콘 */}
+              <Search className="w-5 h-5 text-gray-400 hover:text-primary transition-colors cursor-pointer" />
+            </div>
+          </div>
+
+          {/* 액션 버튼들 */}
+          <div className="flex flex-row items-center gap-3">
+            <button className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
+              <Bookmark className="w-5 h-5 text-gray-600" />
+            </button>
+            <button
+              className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors"
+              onClick={() => router.push('/login')}
+            >
+              <UserRound
+                className="w-5 h-5 text-gray-600"
+                onClick={() => setIsToggleOpen(!isToggleOpen)}
+              />
+              {isToggleOpen && (
+                <>
+                  <div className=" flex flex-col absolute top-full right-3 mt-1 w-35 h-fit bg-white border border-[#d2d2d2] rounded-[8px] shadow-lg z-10">
+                    <span
+                      className="text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200"
+                      onClick={() => {
+                        router.push('/mypage');
+                        setIsToggleOpen(false);
+                      }}
+                    >
+                      마이페이지
+                    </span>
+                    <span className="text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200">
+                      고객센터
+                    </span>
+                    <span className="text-[14px] font-semibold text-[#5c5c5c] cursor-pointer tracking-[0%] hover:bg-gray-100 px-2 py-2 rounded transition-colors duration-200">
+                      로그아웃
+                    </span>
+                  </div>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
-      <Bookmark className="w-8 h-8 text-black mr-2"/>
-      <UserRound className="w-8 h-8 text-black" onClick={() => router.push('/signup')}/>
-     </div>
     </div>
-    {/* 화면 전체 너비의 구분선 */}
-    <div className="w-full border-b-[0.5px] border-[#d2d2d2]"></div>
-   </div>
-  )
+  );
 }

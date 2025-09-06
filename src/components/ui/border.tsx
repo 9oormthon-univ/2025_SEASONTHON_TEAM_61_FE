@@ -9,6 +9,7 @@ const borderVariants = cva(
     variants: {
       variant: {
         default: "border-[#d2d2d2]",
+
         light: "border-[#D1D1D1]",
         dark: "border-[#717171]",
         primary: "border-primary",
