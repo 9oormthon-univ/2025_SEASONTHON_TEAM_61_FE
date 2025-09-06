@@ -1,9 +1,8 @@
 'use client'
 
-import { BriefcaseBusiness } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 
 interface CardData {
   id: number;
@@ -18,7 +17,10 @@ interface CardGridProps {
   onSelectionChange?: (selectedTitles: string[]) => void;
 }
 
-export default function CardGrid({ cards, className = "", selectedCards = [], onSelectionChange }: CardGridProps) {
+// 기본 빈 배열을 상수로 정의하여 참조 안정성 확보
+const DEFAULT_SELECTED_CARDS: string[] = [];
+
+export default function CardGrid({ cards, className = "", selectedCards = DEFAULT_SELECTED_CARDS, onSelectionChange }: CardGridProps) {
   const [internalSelectedCards, setInternalSelectedCards] = useState<string[]>(selectedCards);
 
   // 기본 카드 데이터 (8개)
@@ -50,9 +52,15 @@ export default function CardGrid({ cards, className = "", selectedCards = [], on
   };
 
   // props로 받은 selectedCards가 변경되면 내부 상태도 업데이트
+  // JSON.stringify를 사용하여 배열 내용 비교로 불필요한 업데이트 방지
   useEffect(() => {
-    setInternalSelectedCards(selectedCards);
-  }, [selectedCards]);
+    const currentSelection = JSON.stringify(internalSelectedCards.sort());
+    const newSelection = JSON.stringify(selectedCards.sort());
+    
+    if (currentSelection !== newSelection) {
+      setInternalSelectedCards(selectedCards);
+    }
+  }, [selectedCards, internalSelectedCards]);
 
   return (
     <div className={`flex flex-col gap-4 w-full items-center ${className}`}>
