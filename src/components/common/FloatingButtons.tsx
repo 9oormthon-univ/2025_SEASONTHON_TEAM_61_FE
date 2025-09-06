@@ -57,7 +57,7 @@ export default function FloatingButtons() {
       {/* 좋아요 버튼 */}
       <button 
         className="flex flex-col w-20 h-20 bg-white hover:bg-gray-200 text-[#1082ff] rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group font-medium text-[14px]"
-        onClick={() => console.log('캘린더 클릭')}
+        onClick={() => router.push('/mypage/scrap')}
       >
        <Bookmark className="w-8 h-8 text-[#1082ff]" />
        스크랩

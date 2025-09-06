@@ -11,6 +11,31 @@ export interface PolicyCard {
   image?: string;
 }
 
+export interface DetailPolicyProps {
+  policyNo: string;
+  policyName: string;
+  policySummary: string;
+  policyField: string;
+  supportContent: string;
+  operationPeriod: string;
+  applicationPeriod: string;
+  supportScale: string;
+  minAge: number;
+  maxAge: number;
+  incomeCondition: string;
+  educationRequirement: string;
+  majorRequirement: string;
+  employmentStatus: string;
+  specializedField: string;
+  additionalInfo: string;
+  participationRestriction: string;
+  applicationProcess: string;
+  evaluationAndAnnouncement: string;
+  applicationSite: string;
+  requiredDocuments: string;
+  viewCount: number;
+}
+
 export interface DistrictPolicies {
   [district: string]: PolicyCard[];
 }

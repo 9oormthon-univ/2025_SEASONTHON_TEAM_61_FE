@@ -2,7 +2,7 @@
 
 import { ChevronDown, MapPin, Search, UserRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useModal } from '@/contexts/ModalContext';
 import { useLoginState } from '@/stores/login/useLoginState';
@@ -14,6 +14,10 @@ export default function Header() {
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const { selectedAddress, openAddressModal } = useModal();
+  
+  // 토글 외부 클릭 감지를 위한 ref
+  const toggleRef = useRef<HTMLDivElement>(null);
+  const searchDropdownRef = useRef<HTMLDivElement>(null);
 
   const { isLoggedIn } = useLoginState();
 
@@ -47,6 +51,29 @@ export default function Header() {
     return () => clearInterval(interval);
   }, [keywords.length]);
 
+  // 외부 클릭 시 토글 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // 유저 토글 외부 클릭 감지
+      if (toggleRef.current && !toggleRef.current.contains(event.target as Node)) {
+        setIsToggleOpen(false);
+      }
+      
+      // 검색 드롭다운 외부 클릭 감지
+      if (searchDropdownRef.current && !searchDropdownRef.current.contains(event.target as Node)) {
+        setIsSearchDropdownOpen(false);
+      }
+    };
+
+    // 이벤트 리스너 추가
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="w-full bg-white/95 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-100 backdrop:blur supports-[backdrop-filter]:bg-background/60 ">
       <div className="flex flex-row items-center w-full gap-6 justify-between px-6 py-4 max-w-7xl mx-auto">
@@ -78,7 +105,10 @@ export default function Header() {
           </div>
 
           {/* 실시간 인기 검색어 */}
-          <div className="w-100 flex flex-row items-center gap-2 px-4 h-10 transition-all duration-300 cursor-pointer">
+          <div 
+            ref={searchDropdownRef}
+            className="w-100 flex flex-row items-center gap-2 px-4 h-10 transition-all duration-300 cursor-pointer relative"
+          >
             <span className="text-lg font-bold text-primary">{currentSearchIndex + 1}</span>
             <div className="w-80 h-10 relative overflow-hidden">
               <span
@@ -103,7 +133,7 @@ export default function Header() {
 
           {/* 실시간 인기 검색어 드롭다운 */}
           {isSearchDropdownOpen && (
-            <div className="absolute top-16 right-122 mt-2 w-[300px] bg-white border border-gray-200 rounded-sm shadow-lg z-20 overflow-hidden">
+            <div className="absolute top-12 right-0 mt-2 w-[300px] bg-white border border-gray-200 rounded-sm shadow-lg z-20 overflow-hidden">
               <div className="p-4 border-b border-gray-100">
                 <h3 className="text-sm font-semibold text-gray-800 mb-1">실시간 인기 검색어</h3>
                 <p className="text-xs text-gray-500">최근 1시간 단위로 갱신하고 있어요</p>
@@ -137,7 +167,7 @@ export default function Header() {
               className="p-3 rounded-xl hover:bg-gray-100 transition-colors"
               // onClick={() => router.push('/login')}
             >
-              <div className="relative">
+              <div className="relative" ref={toggleRef}>
                 <UserRound
                   className="w-5 h-5 text-gray-600"
                   onClick={() => {

@@ -90,7 +90,7 @@ export default function CardGrid({
               key={card.id}
               className={`w-[150px] h-[160px] rounded-[10px] shadow-lg hover:shadow-xl transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-[#1082FF] text-white border-2 border-[#1082FF]'
+                  ? 'bg-white text-[#1082FF] border-1 border-primary shadow-xs shadow-primary'
                   : 'bg-white text-black border-2 border-transparent'
               }`}
               onClick={() => handleCardClick(card.title)}
@@ -98,7 +98,7 @@ export default function CardGrid({
               <CardHeader className="pb-2">
                 <CardTitle
                   className={`text-[20px] font-semibold truncate ${
-                    isSelected ? 'text-white' : 'text-black'
+                    isSelected ? 'text-[#1082FF]' : 'text-black'
                   }`}
                 >
                   {card.title}
@@ -125,7 +125,7 @@ export default function CardGrid({
               key={card.id}
               className={`w-[150px] h-[160px] rounded-[10px] shadow-lg hover:shadow-xl transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-[#1082FF] text-white border-2 border-[#1082FF]'
+                  ? 'bg-white text-[#1082FF] border-1 border-[#1082FF] shadow-xs shadow-primary'
                   : 'bg-white text-black border-2 border-transparent'
               }`}
               onClick={() => handleCardClick(card.title)}
@@ -133,7 +133,7 @@ export default function CardGrid({
               <CardHeader className="pb-2">
                 <CardTitle
                   className={`text-[20px] font-semibold truncate ${
-                    isSelected ? 'text-white' : 'text-black'
+                    isSelected ? 'text-[#1082FF]' : 'text-black'
                   }`}
                 >
                   {card.title}
