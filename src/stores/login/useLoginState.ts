@@ -1,79 +1,62 @@
 import { create } from 'zustand';
 
-interface UserInfo {
-  id: number;
-  name: string;
-  email?: string;
-  [key: string]: any;
-}
-
 interface LoginState {
   isLoggedIn: boolean;
-  userInfo: UserInfo | null;
-  setUserInfo: (userInfo: UserInfo) => void;
+  accessToken: string | null;
+  refreshToken: string | null;
+  memberId: number | null;
+  setTokens: (accessToken: string, refreshToken: string | null, memberId: number) => void;
   logout: () => void;
-  checkAuthStatus: () => Promise<boolean>;
+  initializeAuth: () => void;
 }
 
 export const useLoginState = create<LoginState>((set, get) => ({
   isLoggedIn: false,
-  userInfo: null,
+  accessToken: null,
+  refreshToken: null,
+  memberId: null,
 
-  setUserInfo: (userInfo) => {
+  setTokens: (accessToken, refreshToken, memberId) => {
+    // 로컬 스토리지에 토큰과 사용자 ID 저장
+    localStorage.setItem('accessToken', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('refreshToken', refreshToken);
+    }
+    localStorage.setItem('memberId', memberId.toString());
+
     set({
-      userInfo,
+      accessToken,
+      refreshToken,
+      memberId,
       isLoggedIn: true,
     });
   },
 
-  logout: async () => {
-    try {
-      // 프록시를 통한 카카오 로그아웃 API 호출
-      await fetch('/kakao/auth/logout', {
-        method: 'POST',
-        credentials: 'include', // 쿠키 전송
-      });
-    } catch (error) {
-      console.error('로그아웃 API 호출 실패:', error);
-    } finally {
-      set({
-        isLoggedIn: false,
-        userInfo: null,
-      });
-      // 로그인 페이지로 리다이렉트
-      window.location.href = '/login';
-    }
   },
 
-  checkAuthStatus: async () => {
+  initializeAuth: () => {
+    // 페이지 로드 시 로컬 스토리지에서 토큰과 사용자 정보 복원
     try {
+
       const response = await fetch('/api/me', {
         method: 'GET',
         credentials: 'include', // 쿠키 전송
       });
 
-      if (response.ok) {
-        const userInfo = await response.json();
+
+      if (accessToken && memberIdStr) {
+        const memberId = parseInt(memberIdStr, 10);
         set({
           isLoggedIn: true,
-          userInfo,
+          accessToken,
+          refreshToken,
+          memberId,
         });
-        return true;
-      } else {
-        set({
-          isLoggedIn: false,
-          userInfo: null,
-        });
-        return false;
       }
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('인증 상태 확인 실패:', error);
-      set({
-        isLoggedIn: false,
-        userInfo: null,
-      });
-      return false;
+      console.error('인증 정보 복원 실패:', error);
+      // 오류 발생 시 로컬 스토리지 클리어
+      get().logout();
     }
   },
 }));
