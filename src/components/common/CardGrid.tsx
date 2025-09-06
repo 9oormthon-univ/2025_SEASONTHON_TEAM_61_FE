@@ -3,7 +3,7 @@
 import { BriefcaseBusiness } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import React from "react";
 
 interface CardData {
   id: number;
@@ -19,8 +19,6 @@ interface CardGridProps {
 }
 
 export default function CardGrid({ cards, className = "", selectedCards = [], onSelectionChange }: CardGridProps) {
-  const [internalSelectedCards, setInternalSelectedCards] = useState<string[]>(selectedCards);
-
   // 기본 카드 데이터 (8개)
   const defaultCards: CardData[] = [
     { id: 1, title: "취업", img: "/img/card/card1.png" },
@@ -41,25 +39,19 @@ export default function CardGrid({ cards, className = "", selectedCards = [], on
 
   // 카드 선택/해제 함수
   const toggleCardSelection = (title: string) => {
-    const newSelection = internalSelectedCards.includes(title)
-      ? internalSelectedCards.filter(card => card !== title)
-      : [...internalSelectedCards, title];
+    const newSelection = selectedCards.includes(title)
+      ? selectedCards.filter(card => card !== title)
+      : [...selectedCards, title];
     
-    setInternalSelectedCards(newSelection);
     onSelectionChange?.(newSelection);
   };
-
-  // props로 받은 selectedCards가 변경되면 내부 상태도 업데이트
-  useEffect(() => {
-    setInternalSelectedCards(selectedCards);
-  }, [selectedCards]);
 
   return (
     <div className={`flex flex-col gap-4 w-full items-center ${className}`}>
       {/* 첫 번째 줄 - 4개 카드 */}
       <div className="grid grid-cols-4 gap-4">
         {firstRow.map((card) => {
-          const isSelected = internalSelectedCards.includes(card.title);
+          const isSelected = selectedCards.includes(card.title);
           return (
             <Card 
               key={card.id} 
@@ -97,7 +89,7 @@ export default function CardGrid({ cards, className = "", selectedCards = [], on
       {/* 두 번째 줄 - 4개 카드 */}
       <div className="grid grid-cols-4 gap-4">
         {secondRow.map((card) => {
-          const isSelected = internalSelectedCards.includes(card.title);
+          const isSelected = selectedCards.includes(card.title);
           return (
             <Card 
               key={card.id} 
